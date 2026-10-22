@@ -4,369 +4,205 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Schéma Réseau Trainer – Network Diagram Trainer</title>
-<meta name="description" content="Application pédagogique pour apprendre à créer des schémas réseau (icônes style Cisco, zones, légende, correction automatique)">
+<meta name="description" content="Application pédagogique pour apprendre à créer des schémas réseau">
 <style>
   :root, [data-theme="dark"] {
-    --bg: #0f172a;
-    --panel: #1e293b;
-    --panel2: #0f172a;
-    --accent: #3b82f6;
-    --accent2: #10b981;
-    --danger: #ef4444;
-    --warn: #f59e0b;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --border: #334155;
-    --hover: #1e3a5f;
-    --canvas-grid: rgba(51,65,85,0.35);
-    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+    --bg: #0f172a; --panel: #1e293b; --panel2: #0f172a;
+    --accent: #3b82f6; --accent2: #10b981; --danger: #ef4444; --warn: #f59e0b;
+    --text: #e2e8f0; --muted: #94a3b8; --border: #334155; --hover: #1e3a5f;
+    --canvas-grid: rgba(51,65,85,0.4); --shadow: 0 4px 20px rgba(0,0,0,0.4);
   }
   [data-theme="light"] {
-    --bg: #f1f5f9;
-    --panel: #ffffff;
-    --panel2: #f8fafc;
-    --accent: #2563eb;
-    --accent2: #059669;
-    --danger: #dc2626;
-    --warn: #d97706;
-    --text: #0f172a;
-    --muted: #64748b;
-    --border: #e2e8f0;
-    --hover: #eff6ff;
-    --canvas-grid: rgba(148,163,184,0.35);
-    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --bg: #f1f5f9; --panel: #ffffff; --panel2: #f8fafc;
+    --accent: #2563eb; --accent2: #059669; --danger: #dc2626; --warn: #d97706;
+    --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --hover: #eff6ff;
+    --canvas-grid: rgba(148,163,184,0.4); --shadow: 0 4px 20px rgba(0,0,0,0.08);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { font-size: 16px; }
   html.fs-sm { font-size: 14px; }
   html.fs-lg { font-size: 18px; }
   body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    height: 100vh; display: flex; flex-direction: column;
     overflow: hidden;
-    transition: background 0.2s, color 0.2s;
   }
   header {
-    background: var(--panel);
-    padding: 0.55rem 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-    z-index: 50;
+    background: var(--panel); padding: 0.5rem 0.85rem;
+    display: flex; align-items: center; gap: 0.6rem;
+    border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 50;
   }
   .burger {
-    display: none;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    align-items: center;
-    justify-content: center;
+    display: none; background: transparent; border: 1px solid var(--border);
+    color: var(--text); width: 2.1rem; height: 2.1rem; border-radius: 6px;
+    cursor: pointer; font-size: 1.15rem; align-items: center; justify-content: center;
   }
-  header h1 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    white-space: nowrap;
-  }
+  header h1 { font-size: 1.05rem; font-weight: 600; white-space: nowrap; }
   header h1 span { color: var(--accent); }
   .badge {
-    background: var(--panel2);
-    color: var(--muted);
-    font-size: 0.65rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid var(--border);
+    background: var(--panel2); color: var(--muted); font-size: 0.62rem;
+    padding: 0.12rem 0.45rem; border-radius: 999px; border: 1px solid var(--border);
   }
   .header-controls {
-    margin-left: auto;
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-    flex-wrap: wrap;
+    margin-left: auto; display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;
   }
   .header-controls button, .header-controls select {
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 0.35rem 0.6rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.78rem;
+    background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+    padding: 0.32rem 0.55rem; border-radius: 6px; cursor: pointer; font-size: 0.76rem;
   }
   .header-controls button:hover { border-color: var(--accent); background: var(--hover); }
-  .main {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    position: relative;
-  }
-  /* Palette gauche */
+
+  .main { display: flex; flex: 1; min-height: 0; position: relative; }
+
+  /* ===== PALETTE (scrollable) ===== */
   .palette {
-    width: 170px;
-    background: var(--panel);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    transition: margin-left 0.25s, width 0.25s;
-    z-index: 40;
+    width: 168px; background: var(--panel); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; flex-shrink: 0;
+    transition: margin-left 0.25s; z-index: 40; min-height: 0;
   }
-  .palette.collapsed {
-    margin-left: -170px;
+  .palette.collapsed { margin-left: -168px; }
+  .collapse-btn {
+    background: var(--panel2); border: none; border-bottom: 1px solid var(--border);
+    color: var(--muted); padding: 0.3rem; cursor: pointer; font-size: 0.75rem; flex-shrink: 0;
   }
   .palette h3 {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--muted);
-    padding: 0.7rem 0.7rem 0.35rem;
+    font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--muted); padding: 0.55rem 0.6rem 0.25rem; flex-shrink: 0;
   }
   .icons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.35rem;
-    padding: 0 0.55rem 0.55rem;
-    overflow-y: auto;
-    flex: 1;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem;
+    padding: 0 0.5rem 0.5rem;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    flex: 1 1 auto;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
   }
   .icon-btn {
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.45rem 0.2rem;
-    cursor: grab;
-    text-align: center;
-    transition: all 0.15s;
-    user-select: none;
+    background: var(--panel2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.4rem 0.15rem; cursor: grab; text-align: center; user-select: none;
   }
   .icon-btn:hover { border-color: var(--accent); background: var(--hover); }
   .icon-btn:active { cursor: grabbing; }
-  .icon-btn svg { width: 2.4rem; height: 2.4rem; display: block; margin: 0 auto 0.2rem; }
-  .icon-btn span { font-size: 0.62rem; color: var(--muted); display: block; }
+  .icon-btn svg { width: 2.3rem; height: 2.3rem; display: block; margin: 0 auto 0.15rem; pointer-events: none; }
+  .icon-btn span { font-size: 0.6rem; color: var(--muted); display: block; pointer-events: none; }
+
   .tools {
-    padding: 0.5rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+    padding: 0.45rem; border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 0.25rem; flex-shrink: 0;
   }
   .tool-btn {
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 0.45rem 0.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.75rem;
-    text-align: left;
+    background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+    padding: 0.4rem 0.45rem; border-radius: 6px; cursor: pointer; font-size: 0.72rem; text-align: left;
   }
   .tool-btn:hover, .tool-btn.active { border-color: var(--accent); background: var(--hover); color: var(--accent); }
-  .collapse-btn {
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 0.3rem;
-    cursor: pointer;
-    font-size: 0.75rem;
-    border-radius: 0;
-  }
-  /* Workspace */
-  .workspace {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
+
+  /* ===== WORKSPACE ===== */
+  .workspace { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
   .toolbar {
-    background: var(--panel);
-    padding: 0.45rem 0.7rem;
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
+    background: var(--panel); padding: 0.4rem 0.65rem; display: flex; gap: 0.35rem;
+    align-items: center; border-bottom: 1px solid var(--border); flex-wrap: wrap; flex-shrink: 0;
   }
   .toolbar button, .toolbar select {
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 0.35rem 0.7rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.78rem;
+    background: var(--panel2); border: 1px solid var(--border); color: var(--text);
+    padding: 0.32rem 0.65rem; border-radius: 6px; cursor: pointer; font-size: 0.76rem;
   }
   .toolbar button:hover { border-color: var(--accent); }
   .toolbar button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
   .toolbar button.success { background: var(--accent2); border-color: var(--accent2); color: #fff; }
   .toolbar button.danger { background: transparent; border-color: var(--danger); color: var(--danger); }
+
   #canvas-wrap {
-    flex: 1;
-    position: relative;
+    flex: 1; position: relative; min-height: 0;
     background:
       linear-gradient(var(--canvas-grid) 1px, transparent 1px),
       linear-gradient(90deg, var(--canvas-grid) 1px, transparent 1px);
     background-size: 24px 24px;
-    overflow: hidden;
+    overflow: hidden; cursor: default;
   }
-  #canvas { width: 100%; height: 100%; display: block; }
-  /* Side panel */
+  #canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+
+  /* ===== SIDE ===== */
   .side {
-    width: 280px;
-    background: var(--panel);
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    transition: margin-right 0.25s;
-    z-index: 40;
+    width: 270px; background: var(--panel); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; flex-shrink: 0;
+    transition: margin-right 0.25s; z-index: 40; min-height: 0;
   }
-  .side.collapsed { margin-right: -280px; }
-  .side-tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .side.collapsed { margin-right: -270px; }
+  .side-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .side-tabs button {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    padding: 0.6rem;
-    cursor: pointer;
-    font-size: 0.78rem;
+    flex: 1; background: transparent; border: none; color: var(--muted);
+    padding: 0.55rem; cursor: pointer; font-size: 0.76rem;
     border-bottom: 2px solid transparent;
   }
   .side-tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .side-content { flex: 1; overflow-y: auto; padding: 0.75rem; }
+  .side-content { flex: 1; overflow-y: auto; padding: 0.7rem; min-height: 0; }
   .feedback {
-    margin-top: 0.75rem;
-    padding: 0.75rem;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    line-height: 1.5;
-    display: none;
+    margin-top: 0.7rem; padding: 0.7rem; border-radius: 8px;
+    font-size: 0.8rem; line-height: 1.45; display: none;
   }
   .feedback.ok { background: rgba(16,185,129,0.12); border: 1px solid var(--accent2); display: block; }
   .feedback.partial { background: rgba(245,158,11,0.12); border: 1px solid var(--warn); display: block; }
   .feedback.ko { background: rgba(239,68,68,0.12); border: 1px solid var(--danger); display: block; }
-  .feedback ul { margin: 0.5rem 0 0 1rem; }
-  .legend-box, .help-text {
-    font-size: 0.8rem;
-    line-height: 1.5;
-    color: var(--muted);
-  }
+  .feedback ul { margin: 0.4rem 0 0 1rem; }
+  .legend-box, .help-text { font-size: 0.78rem; line-height: 1.45; color: var(--muted); }
   .legend-box h4, .help-text strong { color: var(--text); }
-  .legend-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
-  .legend-item .swatch {
-    width: 1.1rem; height: 0.85rem; border-radius: 3px; border: 1px solid var(--border);
-  }
+  .legend-item { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.3rem; }
+  .legend-item .swatch { width: 1rem; height: 0.8rem; border-radius: 3px; border: 1px solid var(--border); }
+
   .status-bar {
-    background: var(--panel2);
-    border-top: 1px solid var(--border);
-    padding: 0.35rem 0.7rem;
-    font-size: 0.72rem;
-    color: var(--muted);
-    display: flex;
-    justify-content: space-between;
+    background: var(--panel2); border-top: 1px solid var(--border);
+    padding: 0.3rem 0.65rem; font-size: 0.7rem; color: var(--muted);
+    display: flex; justify-content: space-between; flex-shrink: 0;
   }
-  /* Footer */
+
   footer {
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    padding: 0.5rem 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    font-size: 0.75rem;
-    color: var(--muted);
-    flex-shrink: 0;
+    background: var(--panel); border-top: 1px solid var(--border);
+    padding: 0.45rem 1rem; display: flex; align-items: center; justify-content: center;
+    gap: 0.65rem; flex-wrap: wrap; font-size: 0.72rem; color: var(--muted); flex-shrink: 0;
   }
-  footer a {
-    color: var(--accent);
-    text-decoration: none;
-  }
+  footer a { color: var(--accent); text-decoration: none; }
   footer a:hover { text-decoration: underline; }
   footer .sep { opacity: 0.4; }
-  /* Modal */
+
   .modal-bg {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.55);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    display: none; align-items: center; justify-content: center; z-index: 100;
   }
   .modal-bg.show { display: flex; }
   .modal {
-    background: var(--panel);
-    border-radius: 12px;
-    padding: 1.4rem;
-    max-width: 420px;
-    width: 92%;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
+    background: var(--panel); border-radius: 12px; padding: 1.3rem;
+    max-width: 400px; width: 92%; border: 1px solid var(--border); box-shadow: var(--shadow);
   }
-  .modal h2 { margin-bottom: 0.6rem; font-size: 1.1rem; }
-  .modal p { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.9rem; line-height: 1.45; }
+  .modal h2 { margin-bottom: 0.5rem; font-size: 1.05rem; }
+  .modal p { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.8rem; line-height: 1.4; }
   .modal input {
-    width: 100%;
-    background: var(--panel2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 0.5rem 0.7rem;
-    border-radius: 6px;
-    margin-bottom: 0.9rem;
-    font-size: 0.9rem;
+    width: 100%; background: var(--panel2); border: 1px solid var(--border);
+    color: var(--text); padding: 0.45rem 0.65rem; border-radius: 6px; margin-bottom: 0.8rem; font-size: 0.88rem;
   }
-  .modal .actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+  .modal .actions { display: flex; gap: 0.45rem; justify-content: flex-end; }
   .modal .actions button {
-    padding: 0.45rem 1rem;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-size: 0.85rem;
+    padding: 0.4rem 0.9rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.82rem;
   }
   .btn-cancel { background: var(--border); color: var(--text); }
   .btn-ok { background: var(--accent); color: #fff; }
-  /* Overlay mobile */
-  .overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 35;
-  }
+
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 35; }
   .overlay.show { display: block; }
-  /* Responsive */
+
   @media (max-width: 900px) {
     .burger { display: flex; }
     .palette {
-      position: fixed;
-      left: 0; top: 0; bottom: 0;
-      height: 100%;
-      margin-left: 0 !important;
-      transform: translateX(-100%);
-      transition: transform 0.25s;
-      box-shadow: var(--shadow);
+      position: fixed; left: 0; top: 0; bottom: 0; height: 100%;
+      margin-left: 0 !important; transform: translateX(-100%);
+      transition: transform 0.25s; box-shadow: var(--shadow);
     }
     .palette.open { transform: translateX(0); }
     .side {
-      position: fixed;
-      right: 0; top: 0; bottom: 0;
-      height: 100%;
-      margin-right: 0 !important;
-      transform: translateX(100%);
-      transition: transform 0.25s;
-      box-shadow: var(--shadow);
-      width: min(300px, 85vw);
+      position: fixed; right: 0; top: 0; bottom: 0; height: 100%;
+      margin-right: 0 !important; transform: translateX(100%);
+      transition: transform 0.25s; box-shadow: var(--shadow); width: min(290px, 85vw);
     }
     .side.open { transform: translateX(0); }
     .badge { display: none; }
@@ -398,11 +234,11 @@
 
 <div class="main">
   <aside class="palette" id="palette">
-    <button class="collapse-btn" id="btnCollapsePalette" title="Réduire">◀</button>
+    <button class="collapse-btn" id="btnCollapsePalette" title="Réduire">◀ Réduire</button>
     <h3 data-i18n="equipment">Équipements</h3>
     <div class="icons" id="paletteIcons"></div>
     <div class="tools">
-      <h3 style="padding:0 0 0.25rem;" data-i18n="tools">Outils</h3>
+      <h3 style="padding:0 0 0.2rem;" data-i18n="tools">Outils</h3>
       <button class="tool-btn active" data-tool="select">↖ <span data-i18n="select">Sélection</span></button>
       <button class="tool-btn" data-tool="arrow">→ <span data-i18n="arrow">Flèche / Lien</span></button>
       <button class="tool-btn" data-tool="zone">▢ <span data-i18n="zone">Zone</span></button>
@@ -413,12 +249,12 @@
 
   <div class="workspace">
     <div class="toolbar">
-      <button class="primary" onclick="startExercise()" data-i18n="loadExo">Charger exercice</button>
-      <button class="success" onclick="correctSchema()" data-i18n="correct">✓ Corriger</button>
-      <button onclick="addLegend()" data-i18n="legend">Légende</button>
-      <button onclick="clearCanvas()" data-i18n="clear">Tout effacer</button>
-      <button class="danger" onclick="exportPNG()" data-i18n="export">Télécharger PNG</button>
-      <span style="margin-left:auto;font-size:0.72rem;color:var(--muted);" id="toolHint" data-i18n="hintSelect">Sélectionnez un outil ou glissez une icône</span>
+      <button class="primary" id="btnLoadExo" data-i18n="loadExo">Charger exercice</button>
+      <button class="success" id="btnCorrect" data-i18n="correct">✓ Corriger</button>
+      <button id="btnLegend" data-i18n="legend">Légende</button>
+      <button id="btnClear" data-i18n="clear">Tout effacer</button>
+      <button class="danger" id="btnExport" data-i18n="export">Télécharger PNG</button>
+      <span style="margin-left:auto;font-size:0.7rem;color:var(--muted);" id="toolHint" data-i18n="hintSelect">Sélectionnez un outil ou glissez une icône</span>
     </div>
     <div id="canvas-wrap"><canvas id="canvas"></canvas></div>
     <div class="status-bar">
@@ -465,166 +301,128 @@
     <p data-i18n="modalDesc">Donnez un nom clair (ex. : CORE-SW-01, Pare-feu externe…)</p>
     <input type="text" id="labelInput" placeholder="Nom">
     <div class="actions">
-      <button class="btn-cancel" onclick="closeModal()" data-i18n="cancel">Annuler</button>
-      <button class="btn-ok" onclick="applyLabel()" data-i18n="validate">Valider</button>
+      <button class="btn-cancel" id="btnModalCancel" data-i18n="cancel">Annuler</button>
+      <button class="btn-ok" id="btnModalOk" data-i18n="validate">Valider</button>
     </div>
   </div>
 </div>
 
 <script>
-// ===================== i18n =====================
+/* ========== i18n ========== */
 const I18N = {
   fr: {
-    badge: "Prototype pédagogique",
-    chooseExo: "— Choisir un exercice —",
-    equipment: "Équipements",
-    tools: "Outils",
-    select: "Sélection",
-    arrow: "Flèche / Lien",
-    zone: "Zone",
-    label: "Texte",
-    delete: "Supprimer",
-    loadExo: "Charger exercice",
-    correct: "✓ Corriger",
-    legend: "Légende",
-    clear: "Tout effacer",
-    export: "Télécharger PNG",
-    hintSelect: "Sélectionnez un outil ou glissez une icône",
-    hintArrow: "Cliquez départ puis arrivée",
-    hintZone: "Cliquez-glissez pour une zone",
-    hintLabel: "Cliquez un objet pour le renommer",
-    hintDelete: "Cliquez un objet pour le supprimer",
-    ready: "Prêt",
-    tabExo: "Exercice",
-    tabLegend: "Légende",
-    tabHelp: "Aide",
-    exoIntro: "Choisissez un exercice, chargez-le, construisez le schéma, puis cliquez sur « Corriger ».",
-    legendTitle: "Légende du schéma",
-    legendEmpty: "Ajoutez des zones et des équipements.",
-    modalTitle: "Nommer l’élément",
-    modalDesc: "Donnez un nom clair (ex. : CORE-SW-01, Pare-feu externe…)",
-    cancel: "Annuler",
-    validate: "Valider",
-    zonePrompt: "Nom de la zone (ex. : LAN, DMZ, Internet) :",
-    clearConfirm: "Effacer tout le schéma ?",
-    chooseFirst: "Choisissez d’abord un exercice.",
-    loadFirst: "Chargez d’abord un exercice.",
-    helpHtml: `<p><strong>Comment utiliser</strong></p>
-      <ol style="margin:0.4rem 0 0.8rem 1rem;line-height:1.55;">
-        <li>Choisissez un exercice</li>
-        <li>Glissez les icônes depuis la palette</li>
-        <li>Outil <strong>Flèche</strong> : clic départ → clic arrivée</li>
-        <li>Outil <strong>Zone</strong> : dessinez LAN / DMZ / Internet</li>
+    badge:"Prototype pédagogique", chooseExo:"— Choisir un exercice —",
+    equipment:"Équipements", tools:"Outils", select:"Sélection", arrow:"Flèche / Lien",
+    zone:"Zone", label:"Texte", delete:"Supprimer",
+    loadExo:"Charger exercice", correct:"✓ Corriger", legend:"Légende",
+    clear:"Tout effacer", export:"Télécharger PNG",
+    hintSelect:"Outil Sélection : cliquez puis glissez un élément",
+    hintArrow:"Flèche : cliquez sur l'équipement de DÉPART, puis sur l'ARRIVÉE",
+    hintZone:"Zone : cliquez-glissez pour dessiner LAN / DMZ…",
+    hintLabel:"Texte : cliquez un objet pour le renommer",
+    hintDelete:"Supprimer : cliquez un objet",
+    ready:"Prêt", tabExo:"Exercice", tabLegend:"Légende", tabHelp:"Aide",
+    exoIntro:"Choisissez un exercice, chargez-le, construisez le schéma, puis cliquez sur « Corriger ».",
+    legendTitle:"Légende du schéma", legendEmpty:"Ajoutez des zones et des équipements.",
+    modalTitle:"Nommer l'élément", modalDesc:"Donnez un nom clair (ex. : CORE-SW-01, Pare-feu externe…)",
+    cancel:"Annuler", validate:"Valider",
+    zonePrompt:"Nom de la zone (ex. : LAN, DMZ, Internet) :",
+    clearConfirm:"Effacer tout le schéma ?",
+    chooseFirst:"Choisissez d'abord un exercice.", loadFirst:"Chargez d'abord un exercice.",
+    arrowAdded:"Lien ajouté ✓", arrowStartMsg:"Départ sélectionné → cliquez l'arrivée",
+    helpHtml:`<p><strong>Comment utiliser</strong></p>
+      <ol style="margin:0.35rem 0 0.7rem 1rem;line-height:1.5;">
+        <li>Choisissez un exercice → <strong>Charger</strong></li>
+        <li>Glissez les icônes (ou cliquez) depuis la gauche</li>
+        <li><strong>Sélection</strong> : cliquez un objet puis glissez pour le déplacer</li>
+        <li><strong>Flèche</strong> : clic sur départ → clic sur arrivée</li>
+        <li><strong>Zone</strong> : cliquez-glissez pour LAN / DMZ</li>
         <li>Double-clic pour renommer</li>
-        <li>Cliquez sur <strong>Corriger</strong></li>
+        <li><strong>Corriger</strong> pour le feedback</li>
       </ol>
-      <p><strong>Règles d’un bon schéma</strong></p>
-      <ul style="margin:0.3rem 0 0 1rem;line-height:1.55;">
-        <li>Icônes cohérentes (style Cisco)</li>
-        <li>Toujours nommer les équipements</li>
-        <li>Délimiter les zones (LAN, DMZ…)</li>
-        <li>Indiquer le sens des flux</li>
-        <li>Ajouter une légende</li>
+      <p><strong>Règles d'un bon schéma</strong></p>
+      <ul style="margin:0.25rem 0 0 1rem;line-height:1.5;">
+        <li>Icônes cohérentes</li><li>Nommer les équipements</li>
+        <li>Délimiter les zones</li><li>Montrer le sens des flux</li><li>Légende</li>
       </ul>`
   },
   en: {
-    badge: "Educational prototype",
-    chooseExo: "— Choose an exercise —",
-    equipment: "Devices",
-    tools: "Tools",
-    select: "Select",
-    arrow: "Arrow / Link",
-    zone: "Zone",
-    label: "Text",
-    delete: "Delete",
-    loadExo: "Load exercise",
-    correct: "✓ Check",
-    legend: "Legend",
-    clear: "Clear all",
-    export: "Download PNG",
-    hintSelect: "Select a tool or drag an icon",
-    hintArrow: "Click start then end device",
-    hintZone: "Click-drag to draw a zone",
-    hintLabel: "Click an object to rename",
-    hintDelete: "Click an object to delete",
-    ready: "Ready",
-    tabExo: "Exercise",
-    tabLegend: "Legend",
-    tabHelp: "Help",
-    exoIntro: "Choose an exercise, load it, build the diagram, then click « Check ».",
-    legendTitle: "Diagram legend",
-    legendEmpty: "Add zones and devices.",
-    modalTitle: "Name the element",
-    modalDesc: "Give a clear name (e.g. CORE-SW-01, External firewall…)",
-    cancel: "Cancel",
-    validate: "OK",
-    zonePrompt: "Zone name (e.g. LAN, DMZ, Internet):",
-    clearConfirm: "Clear the entire diagram?",
-    chooseFirst: "Please choose an exercise first.",
-    loadFirst: "Please load an exercise first.",
-    helpHtml: `<p><strong>How to use</strong></p>
-      <ol style="margin:0.4rem 0 0.8rem 1rem;line-height:1.55;">
-        <li>Choose an exercise</li>
-        <li>Drag icons from the palette</li>
-        <li><strong>Arrow</strong> tool: click start → click end</li>
-        <li><strong>Zone</strong> tool: draw LAN / DMZ / Internet</li>
+    badge:"Educational prototype", chooseExo:"— Choose an exercise —",
+    equipment:"Devices", tools:"Tools", select:"Select", arrow:"Arrow / Link",
+    zone:"Zone", label:"Text", delete:"Delete",
+    loadExo:"Load exercise", correct:"✓ Check", legend:"Legend",
+    clear:"Clear all", export:"Download PNG",
+    hintSelect:"Select tool: click then drag an element",
+    hintArrow:"Arrow: click START device, then END device",
+    hintZone:"Zone: click-drag to draw LAN / DMZ…",
+    hintLabel:"Text: click an object to rename",
+    hintDelete:"Delete: click an object",
+    ready:"Ready", tabExo:"Exercise", tabLegend:"Legend", tabHelp:"Help",
+    exoIntro:"Choose an exercise, load it, build the diagram, then click « Check ».",
+    legendTitle:"Diagram legend", legendEmpty:"Add zones and devices.",
+    modalTitle:"Name the element", modalDesc:"Give a clear name (e.g. CORE-SW-01, External firewall…)",
+    cancel:"Cancel", validate:"OK",
+    zonePrompt:"Zone name (e.g. LAN, DMZ, Internet):",
+    clearConfirm:"Clear the entire diagram?",
+    chooseFirst:"Please choose an exercise first.", loadFirst:"Please load an exercise first.",
+    arrowAdded:"Link added ✓", arrowStartMsg:"Start selected → click the end",
+    helpHtml:`<p><strong>How to use</strong></p>
+      <ol style="margin:0.35rem 0 0.7rem 1rem;line-height:1.5;">
+        <li>Choose an exercise → <strong>Load</strong></li>
+        <li>Drag icons (or click) from the left</li>
+        <li><strong>Select</strong>: click an object then drag to move</li>
+        <li><strong>Arrow</strong>: click start → click end</li>
+        <li><strong>Zone</strong>: click-drag for LAN / DMZ</li>
         <li>Double-click to rename</li>
-        <li>Click <strong>Check</strong></li>
+        <li><strong>Check</strong> for feedback</li>
       </ol>
       <p><strong>Good diagram rules</strong></p>
-      <ul style="margin:0.3rem 0 0 1rem;line-height:1.55;">
-        <li>Consistent icons (Cisco style)</li>
-        <li>Always name devices</li>
-        <li>Clearly delimit zones (LAN, DMZ…)</li>
-        <li>Show traffic direction</li>
-        <li>Add a legend</li>
+      <ul style="margin:0.25rem 0 0 1rem;line-height:1.5;">
+        <li>Consistent icons</li><li>Name devices</li>
+        <li>Delimit zones</li><li>Show traffic direction</li><li>Legend</li>
       </ul>`
   }
 };
-
-let lang = 'fr';
-
-function t(key) { return (I18N[lang] && I18N[lang][key]) || key; }
-
-function applyI18n() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (I18N[lang][key]) el.textContent = I18N[lang][key];
+let lang = localStorage.getItem('srt-lang') || 'fr';
+function t(k){ return (I18N[lang]&&I18N[lang][k])||k; }
+function applyI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(I18N[lang][k]) el.textContent=I18N[lang][k];
   });
-  document.getElementById('helpContent').innerHTML = t('helpHtml');
-  document.getElementById('btnLang').textContent = lang.toUpperCase();
-  document.documentElement.lang = lang;
-  // update tool hint if needed
-  const hints = { select: 'hintSelect', arrow: 'hintArrow', zone: 'hintZone', label: 'hintLabel', delete: 'hintDelete' };
-  document.getElementById('toolHint').textContent = t(hints[currentTool] || 'hintSelect');
+  document.getElementById('helpContent').innerHTML=t('helpHtml');
+  document.getElementById('btnLang').textContent=lang.toUpperCase();
+  document.documentElement.lang=lang;
+  const hints={select:'hintSelect',arrow:'hintArrow',zone:'hintZone',label:'hintLabel',delete:'hintDelete'};
+  document.getElementById('toolHint').textContent=t(hints[currentTool]||'hintSelect');
+  rebuildPaletteLabels();
 }
 
-// ===================== DATA =====================
-const ICONS = [
-  { id: 'router', label: {fr:'Routeur',en:'Router'} },
-  { id: 'switch', label: {fr:'Switch',en:'Switch'} },
-  { id: 'firewall', label: {fr:'Pare-feu',en:'Firewall'} },
-  { id: 'server', label: {fr:'Serveur',en:'Server'} },
-  { id: 'workstation', label: {fr:'Poste',en:'Workstation'} },
-  { id: 'cloud', label: {fr:'Internet',en:'Internet'} },
-  { id: 'ap', label: {fr:'Wi-Fi AP',en:'Wi-Fi AP'} },
-  { id: 'db', label: {fr:'Base de données',en:'Database'} },
-  { id: 'loadbalancer', label: {fr:'Load Balancer',en:'Load Balancer'} },
-  { id: 'fileserver', label: {fr:'Fichier',en:'File Server'} },
+/* ========== DATA ========== */
+const ICONS=[
+  {id:'router',label:{fr:'Routeur',en:'Router'}},
+  {id:'switch',label:{fr:'Switch',en:'Switch'}},
+  {id:'firewall',label:{fr:'Pare-feu',en:'Firewall'}},
+  {id:'server',label:{fr:'Serveur',en:'Server'}},
+  {id:'workstation',label:{fr:'Poste',en:'Workstation'}},
+  {id:'cloud',label:{fr:'Internet',en:'Internet'}},
+  {id:'ap',label:{fr:'Wi-Fi AP',en:'Wi-Fi AP'}},
+  {id:'db',label:{fr:'Base de données',en:'Database'}},
+  {id:'loadbalancer',label:{fr:'Load Balancer',en:'Load Balancer'}},
+  {id:'fileserver',label:{fr:'Fichier',en:'File Server'}},
 ];
-
-const EXERCISES = {
-  corporate: {
-    title: { fr: '1. Réseau Corporate (LAN + DMZ)', en: '1. Corporate Network (LAN + DMZ)' },
-    description: {
-      fr: `Créez un schéma classique d’entreprise :
+const EXERCISES={
+  corporate:{
+    title:{fr:'1. Réseau Corporate (LAN + DMZ)',en:'1. Corporate Network (LAN + DMZ)'},
+    description:{
+      fr:`Créez un schéma classique d'entreprise :
 • Un nuage Internet
 • Un pare-feu externe
 • Une zone DMZ avec serveur Web et serveur E-mail
 • Un switch
 • Des postes + un serveur de fichiers dans le LAN
 Délimitez clairement les zones LAN et DMZ.`,
-      en: `Create a classic enterprise diagram:
+      en:`Create a classic enterprise diagram:
 • An Internet cloud
 • An external firewall
 • A DMZ zone with Web and Mail servers
@@ -632,502 +430,532 @@ Délimitez clairement les zones LAN et DMZ.`,
 • Workstations + a file server in the LAN
 Clearly delimit LAN and DMZ zones.`
     },
-    required: [
-      { type: 'cloud', min: 1, msg: {fr:'Internet / Cloud manquant', en:'Internet / Cloud missing'} },
-      { type: 'firewall', min: 1, msg: {fr:'Au moins un pare-feu requis', en:'At least one firewall required'} },
-      { type: 'server', min: 1, msg: {fr:'Serveur(s) manquant(s) dans la DMZ', en:'Server(s) missing in DMZ'} },
-      { type: 'switch', min: 1, msg: {fr:'Switch manquant dans le LAN', en:'Switch missing in LAN'} },
-      { type: 'workstation', min: 1, msg: {fr:'Poste(s) de travail manquant(s)', en:'Workstation(s) missing'} },
-      { type: 'zone', min: 1, msg: {fr:'Au moins une zone (LAN ou DMZ) requise', en:'At least one zone (LAN or DMZ) required'} },
-      { type: 'arrow', min: 2, msg: {fr:'Au moins 2 liens/flèches requis', en:'At least 2 links/arrows required'} },
+    required:[
+      {type:'cloud',min:1,msg:{fr:'Internet / Cloud manquant',en:'Internet / Cloud missing'}},
+      {type:'firewall',min:1,msg:{fr:'Au moins un pare-feu requis',en:'At least one firewall required'}},
+      {type:'server',min:1,msg:{fr:'Serveur(s) manquant(s)',en:'Server(s) missing'}},
+      {type:'switch',min:1,msg:{fr:'Switch manquant',en:'Switch missing'}},
+      {type:'workstation',min:1,msg:{fr:'Poste(s) manquant(s)',en:'Workstation(s) missing'}},
+      {type:'zone',min:1,msg:{fr:'Au moins une zone requise',en:'At least one zone required'}},
+      {type:'arrow',min:2,msg:{fr:'Au moins 2 liens/flèches requis',en:'At least 2 links/arrows required'}},
     ],
-    tips: {
-      fr: ['Placez Internet à droite ou en haut','La DMZ se situe entre le pare-feu et le LAN','Nommez chaque équipement','Ajoutez une légende'],
-      en: ['Place Internet on the right or top','DMZ sits between firewall and LAN','Name every device','Add a legend']
-    }
+    tips:{fr:['Placez Internet à droite ou en haut','La DMZ entre le pare-feu et le LAN','Nommez chaque équipement','Ajoutez une légende'],
+          en:['Place Internet on the right or top','DMZ between firewall and LAN','Name every device','Add a legend']}
   },
-  'dmz-haproxy': {
-    title: { fr: '2. DMZ avec HAProxy', en: '2. DMZ with HAProxy' },
-    description: {
-      fr: `Représentez une DMZ avec répartition de charge :
+  'dmz-haproxy':{
+    title:{fr:'2. DMZ avec HAProxy',en:'2. DMZ with HAProxy'},
+    description:{
+      fr:`Représentez une DMZ avec répartition de charge :
 • Internet → Pare-feu
 • Deux Load Balancers (Actif + Passif)
-• Pare-feu interne
 • Deux serveurs Web redondés
 Indiquez Frontend / Backend.`,
-      en: `Represent a DMZ with load balancing:
+      en:`Represent a DMZ with load balancing:
 • Internet → Firewall
 • Two Load Balancers (Active + Passive)
-• Internal firewall
 • Two redundant Web servers
 Show Frontend / Backend.`
     },
-    required: [
-      { type: 'cloud', min: 1, msg: {fr:'Internet manquant', en:'Internet missing'} },
-      { type: 'loadbalancer', min: 1, msg: {fr:'Au moins un Load Balancer requis', en:'At least one Load Balancer required'} },
-      { type: 'firewall', min: 1, msg: {fr:'Pare-feu manquant', en:'Firewall missing'} },
-      { type: 'server', min: 2, msg: {fr:'Au moins 2 serveurs web redondés', en:'At least 2 redundant web servers'} },
-      { type: 'arrow', min: 3, msg: {fr:'Liens insuffisants', en:'Not enough links'} },
+    required:[
+      {type:'cloud',min:1,msg:{fr:'Internet manquant',en:'Internet missing'}},
+      {type:'loadbalancer',min:1,msg:{fr:'Au moins un Load Balancer requis',en:'At least one Load Balancer required'}},
+      {type:'firewall',min:1,msg:{fr:'Pare-feu manquant',en:'Firewall missing'}},
+      {type:'server',min:2,msg:{fr:'Au moins 2 serveurs web',en:'At least 2 web servers'}},
+      {type:'arrow',min:3,msg:{fr:'Liens insuffisants',en:'Not enough links'}},
     ],
-    tips: {
-      fr: ['Distinguez Frontend et Backend','Indiquez Actif / Passif','Utilisez des zones'],
-      en: ['Distinguish Frontend and Backend','Mark Active / Passive','Use zones']
-    }
+    tips:{fr:['Distinguez Frontend et Backend','Indiquez Actif / Passif','Utilisez des zones'],
+          en:['Distinguish Frontend and Backend','Mark Active / Passive','Use zones']}
   },
-  'vlan-basic': {
-    title: { fr: '3. Segmentation VLAN simple', en: '3. Simple VLAN segmentation' },
-    description: {
-      fr: `Montrez la segmentation :
+  'vlan-basic':{
+    title:{fr:'3. Segmentation VLAN simple',en:'3. Simple VLAN segmentation'},
+    description:{
+      fr:`Montrez la segmentation :
 • Un switch central
 • Au moins 2 postes dans des VLANs différents
 • Un routeur ou pare-feu pour le routage inter-VLAN
 Utilisez labels ou zones pour les VLAN.`,
-      en: `Show segmentation:
+      en:`Show segmentation:
 • A central switch
 • At least 2 workstations in different VLANs
 • A router or firewall for inter-VLAN routing
 Use labels or zones for VLANs.`
     },
-    required: [
-      { type: 'switch', min: 1, msg: {fr:'Switch manquant', en:'Switch missing'} },
-      { type: 'workstation', min: 2, msg: {fr:'Au moins 2 postes requis', en:'At least 2 workstations required'} },
-      { type: 'label', min: 1, msg: {fr:'Labels ou zones pour nommer les VLAN', en:'Labels or zones to name VLANs'} },
+    required:[
+      {type:'switch',min:1,msg:{fr:'Switch manquant',en:'Switch missing'}},
+      {type:'workstation',min:2,msg:{fr:'Au moins 2 postes requis',en:'At least 2 workstations required'}},
+      {type:'label',min:1,msg:{fr:'Labels ou zones pour les VLAN',en:'Labels or zones for VLANs'}},
     ],
-    tips: {
-      fr: ['Nommez les VLAN (ex. VLAN 10 – Admin)','Le routage inter-VLAN se fait souvent via un routeur / pare-feu'],
-      en: ['Name VLANs (e.g. VLAN 10 – Admin)','Inter-VLAN routing often via router / firewall']
-    }
+    tips:{fr:['Nommez les VLAN (ex. VLAN 10 – Admin)','Routage inter-VLAN via routeur / pare-feu'],
+          en:['Name VLANs (e.g. VLAN 10 – Admin)','Inter-VLAN routing via router / firewall']}
   }
 };
 
-// ===================== STATE =====================
+/* ========== STATE ========== */
 let canvas, ctx;
-let objects = [], arrows = [], zones = [];
-let currentTool = 'select';
-let selected = null, dragOffset = {x:0,y:0}, isDragging = false;
-let arrowStart = null, zoneStart = null;
-let nextId = 1, currentExo = null, editingObj = null;
+let objects=[], arrows=[], zones=[];
+let currentTool='select';
+let selected=null;
+let dragOffset={x:0,y:0};
+let isDragging=false;
+let arrowStart=null;
+let zoneStart=null;
+let nextId=1;
+let currentExo=null;
+let editingObj=null;
+let pointerId=null;
 
-// ===================== INIT =====================
-function init() {
-  canvas = document.getElementById('canvas');
-  ctx = canvas.getContext('2d');
+/* ========== INIT ========== */
+function init(){
+  canvas=document.getElementById('canvas');
+  ctx=canvas.getContext('2d');
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
   buildPalette();
   bindTools();
-  bindCanvasEvents();
+  bindCanvas();
   bindTabs();
   bindUI();
   applyI18n();
-  draw();
-  // restore prefs
-  const th = localStorage.getItem('srt-theme');
-  if (th) setTheme(th);
-  const fs = localStorage.getItem('srt-fs');
-  if (fs) document.documentElement.className = fs;
-  const lg = localStorage.getItem('srt-lang');
-  if (lg) { lang = lg; applyI18n(); rebuildPaletteLabels(); }
-}
-
-function resizeCanvas() {
-  const wrap = document.getElementById('canvas-wrap');
-  canvas.width = wrap.clientWidth;
-  canvas.height = wrap.clientHeight;
+  const th=localStorage.getItem('srt-theme'); if(th) setTheme(th);
+  const fs=localStorage.getItem('srt-fs'); if(fs) document.documentElement.className=fs;
   draw();
 }
 
-function rebuildPaletteLabels() {
-  document.querySelectorAll('#paletteIcons .icon-btn').forEach(btn => {
-    const type = btn.dataset.type;
-    const ic = ICONS.find(i => i.id === type);
-    if (ic) btn.querySelector('span').textContent = ic.label[lang];
+function resizeCanvas(){
+  const wrap=document.getElementById('canvas-wrap');
+  const dpr=window.devicePixelRatio||1;
+  const w=wrap.clientWidth, h=wrap.clientHeight;
+  canvas.width=Math.floor(w*dpr);
+  canvas.height=Math.floor(h*dpr);
+  canvas.style.width=w+'px';
+  canvas.style.height=h+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  draw();
+}
+
+function rebuildPaletteLabels(){
+  document.querySelectorAll('#paletteIcons .icon-btn').forEach(btn=>{
+    const type=btn.dataset.type;
+    const ic=ICONS.find(i=>i.id===type);
+    if(ic) btn.querySelector('span').textContent=ic.label[lang];
   });
 }
 
-function buildPalette() {
-  const container = document.getElementById('paletteIcons');
-  container.innerHTML = '';
-  ICONS.forEach(ic => {
-    const btn = document.createElement('div');
-    btn.className = 'icon-btn';
-    btn.draggable = true;
-    btn.dataset.type = ic.id;
-    btn.innerHTML = `<svg width="42" height="42" viewBox="0 0 48 48"></svg><span>${ic.label[lang]}</span>`;
-    // draw icon into svg via outerHTML trick – we use canvas primitives later
-    btn.addEventListener('dragstart', e => e.dataTransfer.setData('type', ic.id));
-    btn.addEventListener('click', () => addObject(ic.id, canvas.width/2 - 30, canvas.height/2 - 30));
+function buildPalette(){
+  const container=document.getElementById('paletteIcons');
+  container.innerHTML='';
+  ICONS.forEach(ic=>{
+    const btn=document.createElement('div');
+    btn.className='icon-btn';
+    btn.draggable=true;
+    btn.dataset.type=ic.id;
+    btn.innerHTML=`<svg viewBox="0 0 48 48">${getIconSVG(ic.id)}</svg><span>${ic.label[lang]}</span>`;
+    btn.addEventListener('dragstart', e=>{
+      e.dataTransfer.setData('text/plain', ic.id);
+      e.dataTransfer.effectAllowed='copy';
+    });
+    btn.addEventListener('click', ()=>{
+      const wrap=document.getElementById('canvas-wrap');
+      addObject(ic.id, wrap.clientWidth/2-32, wrap.clientHeight/2-32);
+    });
     container.appendChild(btn);
-    // inject svg content
-    const svg = btn.querySelector('svg');
-    svg.innerHTML = getIconSVG(ic.id);
   });
 }
 
-function getIconSVG(type) {
-  const colors = {
-    router:'#3b82f6', switch:'#06b6d4', firewall:'#ef4444', server:'#8b5cf6',
-    workstation:'#94a3b8', cloud:'#64748b', ap:'#14b8a6', db:'#f59e0b',
-    loadbalancer:'#ec4899', fileserver:'#a78bfa'
+function getIconSVG(type){
+  const colors={router:'#3b82f6',switch:'#06b6d4',firewall:'#ef4444',server:'#8b5cf6',workstation:'#94a3b8',cloud:'#64748b',ap:'#14b8a6',db:'#f59e0b',loadbalancer:'#ec4899',fileserver:'#a78bfa'};
+  const c=colors[type]||'#94a3b8';
+  const map={
+    router:`<circle cx="24" cy="24" r="16" fill="${c}" opacity="0.2"/><circle cx="24" cy="24" r="9" fill="none" stroke="${c}" stroke-width="2.5"/><path d="M24 5v8M24 35v8M5 24h8M35 24h8M11 11l6 6M31 31l6 6M37 11l-6 6M11 37l6-6" stroke="${c}" stroke-width="2"/>`,
+    switch:`<rect x="6" y="14" width="36" height="20" rx="3" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><line x1="12" y1="24" x2="36" y2="24" stroke="${c}" stroke-width="2"/><circle cx="14" cy="24" r="2.5" fill="${c}"/><circle cx="24" cy="24" r="2.5" fill="${c}"/><circle cx="34" cy="24" r="2.5" fill="${c}"/>`,
+    firewall:`<rect x="10" y="8" width="28" height="32" rx="2" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><path d="M10 16h28M10 24h28M10 32h28" stroke="${c}" stroke-width="2"/>`,
+    server:`<rect x="12" y="6" width="24" height="36" rx="2" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><path d="M12 16h24M12 26h24" stroke="${c}" stroke-width="1.5"/><circle cx="18" cy="11" r="1.5" fill="${c}"/><circle cx="18" cy="21" r="1.5" fill="${c}"/><circle cx="18" cy="31" r="1.5" fill="${c}"/>`,
+    workstation:`<rect x="10" y="8" width="28" height="20" rx="2" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><rect x="18" y="28" width="12" height="4" fill="${c}"/><rect x="14" y="32" width="20" height="3" rx="1" fill="${c}"/>`,
+    cloud:`<path d="M12 28a8 8 0 0 1 0-16 10 10 0 0 1 18-2 8 8 0 0 1 2 18H12z" fill="${c}" opacity="0.3" stroke="${c}" stroke-width="2"/>`,
+    ap:`<circle cx="24" cy="30" r="6" fill="${c}"/><path d="M14 20a12 12 0 0 1 20 0M10 14a18 18 0 0 1 28 0" fill="none" stroke="${c}" stroke-width="2"/>`,
+    db:`<ellipse cx="24" cy="12" rx="14" ry="6" fill="${c}" opacity="0.25" stroke="${c}" stroke-width="2"/><path d="M10 12v20a14 6 0 0 0 28 0V12" fill="${c}" opacity="0.1" stroke="${c}" stroke-width="2"/><ellipse cx="24" cy="32" rx="14" ry="6" fill="none" stroke="${c}" stroke-width="2"/>`,
+    loadbalancer:`<rect x="8" y="14" width="32" height="20" rx="4" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><path d="M16 24l6-6v4h10v4H22v4z" fill="${c}"/>`,
+    fileserver:`<rect x="12" y="8" width="24" height="32" rx="2" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><path d="M18 14h12M18 20h12M18 26h8" stroke="${c}" stroke-width="1.5"/>`
   };
-  const c = colors[type] || '#94a3b8';
-  const map = {
-    router: `<circle cx="24" cy="24" r="16" fill="${c}" opacity="0.2"/><circle cx="24" cy="24" r="9" fill="none" stroke="${c}" stroke-width="2.5"/><path d="M24 5v8M24 35v8M5 24h8M35 24h8M11 11l6 6M31 31l6 6M37 11l-6 6M11 37l6-6" stroke="${c}" stroke-width="2"/>`,
-    switch: `<rect x="6" y="14" width="36" height="20" rx="3" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><line x1="12" y1="24" x2="36" y2="24" stroke="${c}" stroke-width="2"/><circle cx="14" cy="24" r="2.5" fill="${c}"/><circle cx="24" cy="24" r="2.5" fill="${c}"/><circle cx="34" cy="24" r="2.5" fill="${c}"/>`,
-    firewall: `<rect x="10" y="8" width="28" height="32" rx="2" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><path d="M10 16h28M10 24h28M10 32h28" stroke="${c}" stroke-width="2"/>`,
-    server: `<rect x="12" y="6" width="24" height="36" rx="2" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><path d="M12 16h24M12 26h24" stroke="${c}" stroke-width="1.5"/><circle cx="18" cy="11" r="1.5" fill="${c}"/><circle cx="18" cy="21" r="1.5" fill="${c}"/><circle cx="18" cy="31" r="1.5" fill="${c}"/>`,
-    workstation: `<rect x="10" y="8" width="28" height="20" rx="2" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><rect x="18" y="28" width="12" height="4" fill="${c}"/><rect x="14" y="32" width="20" height="3" rx="1" fill="${c}"/>`,
-    cloud: `<path d="M12 28a8 8 0 0 1 0-16 10 10 0 0 1 18-2 8 8 0 0 1 2 18H12z" fill="${c}" opacity="0.3" stroke="${c}" stroke-width="2"/>`,
-    ap: `<circle cx="24" cy="30" r="6" fill="${c}"/><path d="M14 20a12 12 0 0 1 20 0M10 14a18 18 0 0 1 28 0" fill="none" stroke="${c}" stroke-width="2"/>`,
-    db: `<ellipse cx="24" cy="12" rx="14" ry="6" fill="${c}" opacity="0.25" stroke="${c}" stroke-width="2"/><path d="M10 12v20a14 6 0 0 0 28 0V12" fill="${c}" opacity="0.1" stroke="${c}" stroke-width="2"/><ellipse cx="24" cy="32" rx="14" ry="6" fill="none" stroke="${c}" stroke-width="2"/>`,
-    loadbalancer: `<rect x="8" y="14" width="32" height="20" rx="4" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><path d="M16 24l6-6v4h10v4H22v4z" fill="${c}"/>`,
-    fileserver: `<rect x="12" y="8" width="24" height="32" rx="2" fill="${c}" opacity="0.2" stroke="${c}" stroke-width="2"/><path d="M18 14h12M18 20h12M18 26h8" stroke="${c}" stroke-width="1.5"/>`
-  };
-  return map[type] || `<rect x="8" y="8" width="32" height="32" rx="4" fill="${c}" opacity="0.3"/>`;
+  return map[type]||`<rect x="8" y="8" width="32" height="32" rx="4" fill="${c}" opacity="0.3"/>`;
 }
 
-function bindTools() {
-  document.querySelectorAll('.tool-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+function bindTools(){
+  document.querySelectorAll('.tool-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-      currentTool = btn.dataset.tool;
-      arrowStart = null; zoneStart = null;
-      const hints = { select:'hintSelect', arrow:'hintArrow', zone:'hintZone', label:'hintLabel', delete:'hintDelete' };
-      document.getElementById('toolHint').textContent = t(hints[currentTool]);
+      currentTool=btn.dataset.tool;
+      arrowStart=null; zoneStart=null;
+      const hints={select:'hintSelect',arrow:'hintArrow',zone:'hintZone',label:'hintLabel',delete:'hintDelete'};
+      document.getElementById('toolHint').textContent=t(hints[currentTool]);
+      document.getElementById('canvas-wrap').style.cursor = currentTool==='select'?'default': currentTool==='arrow'?'crosshair': currentTool==='zone'?'crosshair':'pointer';
     });
   });
 }
 
-function bindTabs() {
-  document.querySelectorAll('.side-tabs button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.side-tabs button').forEach(b => b.classList.remove('active'));
+function bindTabs(){
+  document.querySelectorAll('.side-tabs button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.side-tabs button').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-      ['exo','legend','help'].forEach(tname => {
-        document.getElementById('tab' + tname.charAt(0).toUpperCase() + tname.slice(1)).style.display =
-          btn.dataset.tab === tname ? 'block' : 'none';
+      ['exo','legend','help'].forEach(tn=>{
+        document.getElementById('tab'+tn.charAt(0).toUpperCase()+tn.slice(1)).style.display = btn.dataset.tab===tn?'block':'none';
       });
     });
   });
 }
 
-function bindUI() {
-  document.getElementById('btnTheme').onclick = () => {
-    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+function bindUI(){
+  document.getElementById('btnTheme').onclick=()=>{
+    const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
     setTheme(next);
   };
-  document.getElementById('btnFontPlus').onclick = () => {
+  document.getElementById('btnFontPlus').onclick=()=>{
     document.documentElement.classList.remove('fs-sm');
     document.documentElement.classList.add('fs-lg');
-    localStorage.setItem('srt-fs', 'fs-lg');
+    localStorage.setItem('srt-fs','fs-lg');
   };
-  document.getElementById('btnFontMinus').onclick = () => {
+  document.getElementById('btnFontMinus').onclick=()=>{
     document.documentElement.classList.remove('fs-lg');
     document.documentElement.classList.add('fs-sm');
-    localStorage.setItem('srt-fs', 'fs-sm');
+    localStorage.setItem('srt-fs','fs-sm');
   };
-  document.getElementById('btnLang').onclick = () => {
-    lang = lang === 'fr' ? 'en' : 'fr';
-    localStorage.setItem('srt-lang', lang);
+  document.getElementById('btnLang').onclick=()=>{
+    lang=lang==='fr'?'en':'fr';
+    localStorage.setItem('srt-lang',lang);
     applyI18n();
-    rebuildPaletteLabels();
-    if (currentExo) startExercise(true);
+    if(currentExo) startExercise(true);
   };
-  document.getElementById('btnCollapsePalette').onclick = () => {
-    document.getElementById('palette').classList.toggle('collapsed');
+  document.getElementById('btnCollapsePalette').onclick=()=> document.getElementById('palette').classList.toggle('collapsed');
+  document.getElementById('btnToggleSide').onclick=()=> document.getElementById('side').classList.toggle('collapsed');
+  document.getElementById('burgerBtn').onclick=()=>{
+    const p=document.getElementById('palette'), s=document.getElementById('side'), ov=document.getElementById('overlay');
+    if(p.classList.contains('open')||s.classList.contains('open')){ p.classList.remove('open'); s.classList.remove('open'); ov.classList.remove('show'); }
+    else { p.classList.add('open'); ov.classList.add('show'); }
   };
-  document.getElementById('btnToggleSide').onclick = () => {
-    document.getElementById('side').classList.toggle('collapsed');
-  };
-  document.getElementById('burgerBtn').onclick = () => {
-    const p = document.getElementById('palette');
-    const s = document.getElementById('side');
-    const ov = document.getElementById('overlay');
-    if (p.classList.contains('open') || s.classList.contains('open')) {
-      p.classList.remove('open'); s.classList.remove('open'); ov.classList.remove('show');
-    } else {
-      p.classList.add('open'); ov.classList.add('show');
-    }
-  };
-  document.getElementById('overlay').onclick = () => {
+  document.getElementById('overlay').onclick=()=>{
     document.getElementById('palette').classList.remove('open');
     document.getElementById('side').classList.remove('open');
     document.getElementById('overlay').classList.remove('show');
   };
-  document.getElementById('labelInput').addEventListener('keydown', e => { if (e.key === 'Enter') applyLabel(); });
+  document.getElementById('btnLoadExo').onclick=()=>startExercise();
+  document.getElementById('btnCorrect').onclick=()=>correctSchema();
+  document.getElementById('btnLegend').onclick=()=>addLegend();
+  document.getElementById('btnClear').onclick=()=>clearCanvas();
+  document.getElementById('btnExport').onclick=()=>exportPNG();
+  document.getElementById('btnModalCancel').onclick=()=>closeModal();
+  document.getElementById('btnModalOk').onclick=()=>applyLabel();
+  document.getElementById('labelInput').addEventListener('keydown',e=>{ if(e.key==='Enter') applyLabel(); });
 }
 
-function setTheme(th) {
-  document.documentElement.setAttribute('data-theme', th);
-  document.getElementById('btnTheme').textContent = th === 'dark' ? '☀️' : '🌙';
-  localStorage.setItem('srt-theme', th);
+function setTheme(th){
+  document.documentElement.setAttribute('data-theme',th);
+  document.getElementById('btnTheme').textContent=th==='dark'?'☀️':'🌙';
+  localStorage.setItem('srt-theme',th);
   draw();
 }
 
-function bindCanvasEvents() {
-  const wrap = document.getElementById('canvas-wrap');
-  wrap.addEventListener('dragover', e => e.preventDefault());
-  wrap.addEventListener('drop', e => {
+/* ========== CANVAS EVENTS (fixed drag + arrows) ========== */
+function bindCanvas(){
+  const wrap=document.getElementById('canvas-wrap');
+
+  wrap.addEventListener('dragover', e=>{ e.preventDefault(); e.dataTransfer.dropEffect='copy'; });
+  wrap.addEventListener('drop', e=>{
     e.preventDefault();
-    const type = e.dataTransfer.getData('type');
-    if (!type) return;
-    const rect = canvas.getBoundingClientRect();
-    addObject(type, e.clientX - rect.left - 30, e.clientY - rect.top - 30);
+    const type=e.dataTransfer.getData('text/plain');
+    if(!type) return;
+    const rect=canvas.getBoundingClientRect();
+    addObject(type, e.clientX-rect.left-32, e.clientY-rect.top-32);
   });
-  canvas.addEventListener('mousedown', onMouseDown);
-  canvas.addEventListener('mousemove', onMouseMove);
-  canvas.addEventListener('mouseup', onMouseUp);
+
+  // Use pointer events for reliable drag
+  canvas.addEventListener('pointerdown', onPointerDown);
+  canvas.addEventListener('pointermove', onPointerMove);
+  canvas.addEventListener('pointerup', onPointerUp);
+  canvas.addEventListener('pointercancel', onPointerUp);
   canvas.addEventListener('dblclick', onDblClick);
 }
 
-function getMousePos(e) {
-  const rect = canvas.getBoundingClientRect();
-  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+function getPos(e){
+  const rect=canvas.getBoundingClientRect();
+  return { x: e.clientX-rect.left, y: e.clientY-rect.top };
 }
 
-function hitTest(x, y) {
-  for (let i = objects.length - 1; i >= 0; i--) {
-    const o = objects[i];
-    if (x >= o.x && x <= o.x + o.w && y >= o.y && y <= o.y + o.h) return { kind: 'obj', ref: o };
+function hitTest(x,y){
+  for(let i=objects.length-1;i>=0;i--){
+    const o=objects[i];
+    if(x>=o.x && x<=o.x+o.w && y>=o.y && y<=o.y+o.h) return {kind:'obj', ref:o};
   }
-  for (let i = zones.length - 1; i >= 0; i--) {
-    const z = zones[i];
-    if (x >= z.x && x <= z.x + z.w && y >= z.y && y <= z.y + z.h) return { kind: 'zone', ref: z };
+  for(let i=zones.length-1;i>=0;i--){
+    const z=zones[i];
+    if(x>=z.x && x<=z.x+z.w && y>=z.y && y<=z.y+z.h) return {kind:'zone', ref:z};
   }
   return null;
 }
 
-function onMouseDown(e) {
-  const pos = getMousePos(e);
-  const hit = hitTest(pos.x, pos.y);
-  if (currentTool === 'select') {
-    if (hit) { selected = hit; isDragging = true; dragOffset = { x: pos.x - hit.ref.x, y: pos.y - hit.ref.y }; }
-    else selected = null;
-  } else if (currentTool === 'arrow') {
-    if (hit && hit.kind === 'obj') {
-      if (!arrowStart) { arrowStart = hit.ref; setStatus(t('hintArrow')); }
-      else {
-        if (arrowStart.id !== hit.ref.id) arrows.push({ fromId: arrowStart.id, toId: hit.ref.id });
-        arrowStart = null; setStatus(t('ready'));
+function onPointerDown(e){
+  const pos=getPos(e);
+  const hit=hitTest(pos.x, pos.y);
+
+  if(currentTool==='select'){
+    if(hit){
+      selected=hit;
+      isDragging=true;
+      dragOffset={ x: pos.x-hit.ref.x, y: pos.y-hit.ref.y };
+      pointerId=e.pointerId;
+      try{ canvas.setPointerCapture(e.pointerId); }catch(_){}
+    } else {
+      selected=null;
+    }
+  } else if(currentTool==='arrow'){
+    if(hit && hit.kind==='obj'){
+      if(!arrowStart){
+        arrowStart=hit.ref;
+        setStatus(t('arrowStartMsg'));
+      } else {
+        if(arrowStart.id !== hit.ref.id){
+          // avoid duplicate
+          const exists=arrows.some(a=>a.fromId===arrowStart.id && a.toId===hit.ref.id);
+          if(!exists) arrows.push({ fromId: arrowStart.id, toId: hit.ref.id });
+          setStatus(t('arrowAdded'));
+        }
+        arrowStart=null;
       }
     }
-  } else if (currentTool === 'zone') {
-    zoneStart = pos;
-  } else if (currentTool === 'label') {
-    if (hit) {
-      editingObj = hit.ref;
-      document.getElementById('labelInput').value = hit.ref.label || '';
+  } else if(currentTool==='zone'){
+    zoneStart=pos;
+    pointerId=e.pointerId;
+    try{ canvas.setPointerCapture(e.pointerId); }catch(_){}
+  } else if(currentTool==='label'){
+    if(hit){
+      editingObj=hit.ref;
+      document.getElementById('labelInput').value=hit.ref.label||'';
       document.getElementById('modalLabel').classList.add('show');
-      setTimeout(() => document.getElementById('labelInput').focus(), 40);
+      setTimeout(()=>document.getElementById('labelInput').focus(),40);
     }
-  } else if (currentTool === 'delete') {
-    if (hit) {
-      if (hit.kind === 'obj') {
-        objects = objects.filter(o => o.id !== hit.ref.id);
-        arrows = arrows.filter(a => a.fromId !== hit.ref.id && a.toId !== hit.ref.id);
-      } else zones = zones.filter(z => z !== hit.ref);
-      selected = null;
+  } else if(currentTool==='delete'){
+    if(hit){
+      if(hit.kind==='obj'){
+        objects=objects.filter(o=>o.id!==hit.ref.id);
+        arrows=arrows.filter(a=>a.fromId!==hit.ref.id && a.toId!==hit.ref.id);
+      } else {
+        zones=zones.filter(z=>z!==hit.ref);
+      }
+      selected=null;
     }
   }
   draw(); updateCount();
 }
 
-function onMouseMove(e) {
-  const pos = getMousePos(e);
-  if (isDragging && selected) {
+function onPointerMove(e){
+  if(pointerId!==null && e.pointerId!==pointerId) return;
+  const pos=getPos(e);
+
+  if(isDragging && selected){
     selected.ref.x = pos.x - dragOffset.x;
     selected.ref.y = pos.y - dragOffset.y;
+    // keep on canvas
+    selected.ref.x = Math.max(-20, Math.min(selected.ref.x, canvas.clientWidth-20));
+    selected.ref.y = Math.max(-20, Math.min(selected.ref.y, canvas.clientHeight-20));
     draw();
   }
-  if (currentTool === 'zone' && zoneStart) {
+
+  if(currentTool==='zone' && zoneStart){
     draw();
     ctx.save();
-    ctx.strokeStyle = '#f59e0b';
-    ctx.setLineDash([6, 4]);
-    ctx.lineWidth = 2;
-    ctx.strokeRect(zoneStart.x, zoneStart.y, pos.x - zoneStart.x, pos.y - zoneStart.y);
+    ctx.strokeStyle='#f59e0b';
+    ctx.setLineDash([6,4]);
+    ctx.lineWidth=2;
+    ctx.strokeRect(zoneStart.x, zoneStart.y, pos.x-zoneStart.x, pos.y-zoneStart.y);
     ctx.restore();
   }
 }
 
-function onMouseUp(e) {
-  if (currentTool === 'zone' && zoneStart) {
-    const pos = getMousePos(e);
-    const x = Math.min(zoneStart.x, pos.x), y = Math.min(zoneStart.y, pos.y);
-    const w = Math.abs(pos.x - zoneStart.x), h = Math.abs(pos.y - zoneStart.y);
-    if (w > 40 && h > 30) {
-      const label = prompt(t('zonePrompt'), 'LAN') || 'Zone';
-      const colors = {
-        'LAN': 'rgba(59,130,246,0.15)', 'DMZ': 'rgba(245,158,11,0.18)',
-        'Internet': 'rgba(239,68,68,0.12)', 'Management': 'rgba(16,185,129,0.12)',
-        'Backend': 'rgba(139,92,246,0.12)'
-      };
-      zones.push({ id: nextId++, x, y, w, h, label, color: colors[label] || 'rgba(148,163,184,0.12)' });
+function onPointerUp(e){
+  if(pointerId!==null && e.pointerId!==pointerId && e.type!=='pointercancel') return;
+
+  if(currentTool==='zone' && zoneStart){
+    const pos=getPos(e);
+    const x=Math.min(zoneStart.x,pos.x), y=Math.min(zoneStart.y,pos.y);
+    const w=Math.abs(pos.x-zoneStart.x), h=Math.abs(pos.y-zoneStart.y);
+    if(w>40 && h>30){
+      const label=prompt(t('zonePrompt'),'LAN')||'Zone';
+      const colors={'LAN':'rgba(59,130,246,0.15)','DMZ':'rgba(245,158,11,0.18)','Internet':'rgba(239,68,68,0.12)','Management':'rgba(16,185,129,0.12)','Backend':'rgba(139,92,246,0.12)'};
+      zones.push({ id:nextId++, x,y,w,h, label, color: colors[label]||'rgba(148,163,184,0.12)' });
     }
-    zoneStart = null;
+    zoneStart=null;
   }
-  isDragging = false;
+
+  isDragging=false;
+  pointerId=null;
+  try{ canvas.releasePointerCapture(e.pointerId); }catch(_){}
   draw(); updateCount(); updateLegend();
 }
 
-function onDblClick(e) {
-  const pos = getMousePos(e);
-  const hit = hitTest(pos.x, pos.y);
-  if (hit) {
-    editingObj = hit.ref;
-    document.getElementById('labelInput').value = hit.ref.label || '';
+function onDblClick(e){
+  const pos=getPos(e);
+  const hit=hitTest(pos.x,pos.y);
+  if(hit){
+    editingObj=hit.ref;
+    document.getElementById('labelInput').value=hit.ref.label||'';
     document.getElementById('modalLabel').classList.add('show');
-    setTimeout(() => document.getElementById('labelInput').focus(), 40);
+    setTimeout(()=>document.getElementById('labelInput').focus(),40);
   }
 }
 
-function addObject(type, x, y) {
-  const def = ICONS.find(i => i.id === type);
-  objects.push({
-    id: nextId++, type, x, y, w: 64, h: 64,
-    label: def ? def.label[lang] : type
-  });
+function addObject(type,x,y){
+  const def=ICONS.find(i=>i.id===type);
+  objects.push({ id:nextId++, type, x, y, w:64, h:64, label: def?def.label[lang]:type });
   draw(); updateCount(); updateLegend();
 }
 
-function applyLabel() {
-  const val = document.getElementById('labelInput').value.trim();
-  if (editingObj && val) editingObj.label = val;
+function applyLabel(){
+  const val=document.getElementById('labelInput').value.trim();
+  if(editingObj && val) editingObj.label=val;
   closeModal(); draw(); updateLegend();
 }
-function closeModal() {
+function closeModal(){
   document.getElementById('modalLabel').classList.remove('show');
-  editingObj = null;
+  editingObj=null;
 }
 
-// ===================== DRAW =====================
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+/* ========== DRAW ========== */
+function draw(){
+  const w=canvas.clientWidth, h=canvas.clientHeight;
+  ctx.clearRect(0,0,w,h);
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
 
-  zones.forEach(z => {
-    ctx.fillStyle = z.color;
-    ctx.fillRect(z.x, z.y, z.w, z.h);
-    ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 3]);
-    ctx.strokeRect(z.x, z.y, z.w, z.h);
+  // Zones
+  zones.forEach(z=>{
+    ctx.fillStyle=z.color;
+    ctx.fillRect(z.x,z.y,z.w,z.h);
+    ctx.strokeStyle=isDark?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.25)';
+    ctx.lineWidth=2;
+    ctx.setLineDash([6,3]);
+    ctx.strokeRect(z.x,z.y,z.w,z.h);
     ctx.setLineDash([]);
-    ctx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
-    ctx.font = 'bold 13px Segoe UI';
-    ctx.fillText(z.label, z.x + 8, z.y + 18);
+    ctx.fillStyle=isDark?'#e2e8f0':'#0f172a';
+    ctx.font='bold 13px Segoe UI,sans-serif';
+    ctx.fillText(z.label, z.x+8, z.y+18);
   });
 
-  arrows.forEach(a => {
-    const from = objects.find(o => o.id === a.fromId);
-    const to = objects.find(o => o.id === a.toId);
-    if (!from || !to) return;
-    drawArrow(from.x + from.w/2, from.y + from.h/2, to.x + to.w/2, to.y + to.h/2, isDark);
+  // Arrows (draw BEFORE objects so they appear under, or after for on top - after is better for visibility)
+  arrows.forEach(a=>{
+    const from=objects.find(o=>o.id===a.fromId);
+    const to=objects.find(o=>o.id===a.toId);
+    if(!from||!to) return;
+    const x1=from.x+from.w/2, y1=from.y+from.h/2;
+    const x2=to.x+to.w/2, y2=to.y+to.h/2;
+    drawArrow(x1,y1,x2,y2,isDark);
   });
 
-  objects.forEach(o => {
-    const isSel = selected && selected.kind === 'obj' && selected.ref.id === o.id;
-    ctx.fillStyle = isSel ? 'rgba(59,130,246,0.25)' : (isDark ? 'rgba(15,23,42,0.75)' : 'rgba(255,255,255,0.9)');
-    ctx.strokeStyle = isSel ? '#3b82f6' : (isDark ? '#475569' : '#94a3b8');
-    ctx.lineWidth = isSel ? 2.5 : 1.5;
-    roundRect(ctx, o.x, o.y, o.w, o.h, 8);
+  // Preview arrow while choosing destination
+  if(currentTool==='arrow' && arrowStart){
+    // subtle highlight on start
+    ctx.save();
+    ctx.strokeStyle='#3b82f6';
+    ctx.lineWidth=3;
+    ctx.setLineDash([4,3]);
+    ctx.strokeRect(arrowStart.x-2, arrowStart.y-2, arrowStart.w+4, arrowStart.h+4);
+    ctx.restore();
+  }
+
+  // Objects
+  objects.forEach(o=>{
+    const isSel=selected && selected.kind==='obj' && selected.ref.id===o.id;
+    ctx.fillStyle=isSel?'rgba(59,130,246,0.28)':(isDark?'rgba(15,23,42,0.8)':'rgba(255,255,255,0.92)');
+    ctx.strokeStyle=isSel?'#3b82f6':(isDark?'#475569':'#94a3b8');
+    ctx.lineWidth=isSel?2.5:1.5;
+    roundRect(ctx,o.x,o.y,o.w,o.h,8);
     ctx.fill(); ctx.stroke();
-    drawIconPrimitive(ctx, o.type, o.x + 8, o.y + 4, 48);
-    ctx.fillStyle = isDark ? '#e2e8f0' : '#0f172a';
-    ctx.font = '11px Segoe UI';
-    ctx.textAlign = 'center';
-    const lab = o.label.length > 12 ? o.label.slice(0,11)+'…' : o.label;
-    ctx.fillText(lab, o.x + o.w/2, o.y + o.h - 4);
-    ctx.textAlign = 'left';
+    drawIcon(ctx, o.type, o.x+8, o.y+4, 48);
+    ctx.fillStyle=isDark?'#e2e8f0':'#0f172a';
+    ctx.font='11px Segoe UI,sans-serif';
+    ctx.textAlign='center';
+    const lab=o.label.length>12?o.label.slice(0,11)+'…':o.label;
+    ctx.fillText(lab, o.x+o.w/2, o.y+o.h-5);
+    ctx.textAlign='left';
   });
 }
 
-function drawIconPrimitive(ctx, type, x, y, size) {
+function drawArrow(x1,y1,x2,y2,isDark){
+  const dx=x2-x1, dy=y2-y1;
+  const len=Math.sqrt(dx*dx+dy*dy)||1;
+  const ux=dx/len, uy=dy/len;
+  // shorten so arrow doesn't go into the box center
+  const margin=36;
+  const sx=x1+ux*margin, sy=y1+uy*margin;
+  const ex=x2-ux*margin, ey=y2-uy*margin;
+
+  ctx.strokeStyle=isDark?'#94a3b8':'#475569';
+  ctx.fillStyle=ctx.strokeStyle;
+  ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.moveTo(sx,sy);
+  ctx.lineTo(ex,ey);
+  ctx.stroke();
+
+  // arrow head
+  const ang=Math.atan2(dy,dx);
+  const hl=12;
+  ctx.beginPath();
+  ctx.moveTo(ex,ey);
+  ctx.lineTo(ex-hl*Math.cos(ang-0.4), ey-hl*Math.sin(ang-0.4));
+  ctx.lineTo(ex-hl*Math.cos(ang+0.4), ey-hl*Math.sin(ang+0.4));
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawIcon(ctx,type,x,y,size){
   ctx.save();
-  ctx.translate(x, y);
+  ctx.translate(x,y);
   ctx.scale(size/48, size/48);
-  ctx.lineWidth = 2;
-  const colors = {
-    router:'#3b82f6', switch:'#06b6d4', firewall:'#ef4444', server:'#8b5cf6',
-    workstation:'#94a3b8', cloud:'#64748b', ap:'#14b8a6', db:'#f59e0b',
-    loadbalancer:'#ec4899', fileserver:'#a78bfa'
-  };
-  const c = colors[type] || '#94a3b8';
-  switch(type) {
+  ctx.lineWidth=2;
+  const colors={router:'#3b82f6',switch:'#06b6d4',firewall:'#ef4444',server:'#8b5cf6',workstation:'#94a3b8',cloud:'#64748b',ap:'#14b8a6',db:'#f59e0b',loadbalancer:'#ec4899',fileserver:'#a78bfa'};
+  const c=colors[type]||'#94a3b8';
+  switch(type){
     case 'router':
-      ctx.fillStyle = c + '4D'; ctx.beginPath(); ctx.arc(24,24,16,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(24,24,9,0,Math.PI*2); ctx.stroke();
+      ctx.fillStyle=c+'55'; ctx.beginPath(); ctx.arc(24,24,16,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=c; ctx.beginPath(); ctx.arc(24,24,9,0,Math.PI*2); ctx.stroke();
       ctx.beginPath();
-      [[24,5],[24,43],[5,24],[43,24],[11,11],[37,37],[37,11],[11,37]].forEach((p,i)=>{ if(i%2===0){ctx.moveTo(24,24);ctx.lineTo(p[0],p[1]);} });
+      [[24,5],[24,43],[5,24],[43,24],[11,11],[37,37],[37,11],[11,37]].forEach((p,i)=>{if(i%2===0){ctx.moveTo(24,24);ctx.lineTo(p[0],p[1]);}});
       ctx.stroke(); break;
     case 'switch':
-      ctx.fillStyle = c + '40'; ctx.strokeStyle = c;
-      roundRect(ctx,6,14,36,20,3); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=c+'40'; ctx.strokeStyle=c; roundRect(ctx,6,14,36,20,3); ctx.fill(); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(12,24); ctx.lineTo(36,24); ctx.stroke();
-      [14,24,34].forEach(cx => { ctx.beginPath(); ctx.arc(cx,24,2.5,0,Math.PI*2); ctx.fillStyle=c; ctx.fill(); });
-      break;
+      [14,24,34].forEach(cx=>{ctx.beginPath();ctx.arc(cx,24,2.5,0,Math.PI*2);ctx.fillStyle=c;ctx.fill();}); break;
     case 'firewall':
-      ctx.fillStyle = c + '33'; ctx.strokeStyle = c;
-      roundRect(ctx,10,8,28,32,2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(10,16);ctx.lineTo(38,16); ctx.moveTo(10,24);ctx.lineTo(38,24); ctx.moveTo(10,32);ctx.lineTo(38,32); ctx.stroke();
-      break;
+      ctx.fillStyle=c+'33'; ctx.strokeStyle=c; roundRect(ctx,10,8,28,32,2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(10,16);ctx.lineTo(38,16); ctx.moveTo(10,24);ctx.lineTo(38,24); ctx.moveTo(10,32);ctx.lineTo(38,32); ctx.stroke(); break;
     case 'server':
-      ctx.fillStyle = c + '33'; ctx.strokeStyle = c;
-      roundRect(ctx,12,6,24,36,2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(12,16);ctx.lineTo(36,16); ctx.moveTo(12,26);ctx.lineTo(36,26); ctx.stroke();
-      break;
+      ctx.fillStyle=c+'33'; ctx.strokeStyle=c; roundRect(ctx,12,6,24,36,2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(12,16);ctx.lineTo(36,16); ctx.moveTo(12,26);ctx.lineTo(36,26); ctx.stroke(); break;
     case 'workstation':
-      ctx.fillStyle = c + '33'; ctx.strokeStyle = c;
-      roundRect(ctx,10,8,28,20,2); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = c; ctx.fillRect(18,28,12,4); ctx.fillRect(14,32,20,3);
-      break;
+      ctx.fillStyle=c+'33'; ctx.strokeStyle=c; roundRect(ctx,10,8,28,20,2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=c; ctx.fillRect(18,28,12,4); ctx.fillRect(14,32,20,3); break;
     case 'cloud':
-      ctx.fillStyle = c + '4D'; ctx.strokeStyle = c;
-      ctx.beginPath(); ctx.arc(16,26,9,0,Math.PI*2); ctx.arc(28,22,11,0,Math.PI*2); ctx.arc(36,28,7,0,Math.PI*2); ctx.fill(); ctx.stroke();
-      break;
+      ctx.fillStyle=c+'55'; ctx.strokeStyle=c;
+      ctx.beginPath(); ctx.arc(16,26,9,0,Math.PI*2); ctx.arc(28,22,11,0,Math.PI*2); ctx.arc(36,28,7,0,Math.PI*2); ctx.fill(); ctx.stroke(); break;
     case 'ap':
-      ctx.fillStyle = c; ctx.beginPath(); ctx.arc(24,30,6,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(24,30,12,-0.9*Math.PI,-0.1*Math.PI); ctx.stroke();
-      ctx.beginPath(); ctx.arc(24,30,18,-0.85*Math.PI,-0.15*Math.PI); ctx.stroke();
-      break;
+      ctx.fillStyle=c; ctx.beginPath(); ctx.arc(24,30,6,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=c; ctx.beginPath(); ctx.arc(24,30,12,-0.9*Math.PI,-0.1*Math.PI); ctx.stroke();
+      ctx.beginPath(); ctx.arc(24,30,18,-0.85*Math.PI,-0.15*Math.PI); ctx.stroke(); break;
     case 'db':
-      ctx.fillStyle = c + '33'; ctx.strokeStyle = c;
+      ctx.fillStyle=c+'33'; ctx.strokeStyle=c;
       ctx.beginPath(); ctx.ellipse(24,12,14,6,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(10,12); ctx.lineTo(10,32); ctx.ellipse(24,32,14,6,0,0,Math.PI); ctx.lineTo(38,12); ctx.stroke();
-      break;
+      ctx.beginPath(); ctx.moveTo(10,12); ctx.lineTo(10,32); ctx.ellipse(24,32,14,6,0,0,Math.PI); ctx.lineTo(38,12); ctx.stroke(); break;
     case 'loadbalancer':
-      ctx.fillStyle = c + '33'; ctx.strokeStyle = c;
-      roundRect(ctx,8,14,32,20,4); ctx.fill(); ctx.stroke();
-      ctx.fillStyle = c;
-      ctx.beginPath(); ctx.moveTo(16,24); ctx.lineTo(22,18); ctx.lineTo(22,22); ctx.lineTo(32,22); ctx.lineTo(32,26); ctx.lineTo(22,26); ctx.lineTo(22,30); ctx.closePath(); ctx.fill();
-      break;
+      ctx.fillStyle=c+'33'; ctx.strokeStyle=c; roundRect(ctx,8,14,32,20,4); ctx.fill(); ctx.stroke();
+      ctx.fillStyle=c; ctx.beginPath(); ctx.moveTo(16,24);ctx.lineTo(22,18);ctx.lineTo(22,22);ctx.lineTo(32,22);ctx.lineTo(32,26);ctx.lineTo(22,26);ctx.lineTo(22,30);ctx.closePath();ctx.fill(); break;
     case 'fileserver':
-      ctx.fillStyle = c + '33'; ctx.strokeStyle = c;
-      roundRect(ctx,12,8,24,32,2); ctx.fill(); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(18,14);ctx.lineTo(30,14); ctx.moveTo(18,20);ctx.lineTo(30,20); ctx.moveTo(18,26);ctx.lineTo(26,26); ctx.stroke();
-      break;
+      ctx.fillStyle=c+'33'; ctx.strokeStyle=c; roundRect(ctx,12,8,24,32,2); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(18,14);ctx.lineTo(30,14); ctx.moveTo(18,20);ctx.lineTo(30,20); ctx.moveTo(18,26);ctx.lineTo(26,26); ctx.stroke(); break;
   }
   ctx.restore();
 }
 
-function drawArrow(x1,y1,x2,y2,isDark) {
-  const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy)||1;
-  const ux=dx/len, uy=dy/len;
-  const sx=x1+ux*32, sy=y1+uy*32, ex=x2-ux*32, ey=y2-uy*32;
-  ctx.strokeStyle = isDark ? '#64748b' : '#475569';
-  ctx.fillStyle = ctx.strokeStyle;
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke();
-  const ang = Math.atan2(dy,dx), hl=10;
-  ctx.beginPath();
-  ctx.moveTo(ex,ey);
-  ctx.lineTo(ex-hl*Math.cos(ang-0.35), ey-hl*Math.sin(ang-0.35));
-  ctx.lineTo(ex-hl*Math.cos(ang+0.35), ey-hl*Math.sin(ang+0.35));
-  ctx.closePath(); ctx.fill();
-}
-
-function roundRect(ctx,x,y,w,h,r) {
+function roundRect(ctx,x,y,w,h,r){
   ctx.beginPath();
   ctx.moveTo(x+r,y);
   ctx.arcTo(x+w,y,x+w,y+h,r);
@@ -1137,101 +965,100 @@ function roundRect(ctx,x,y,w,h,r) {
   ctx.closePath();
 }
 
-// ===================== EXERCISES =====================
-function startExercise(keep) {
-  const key = document.getElementById('exoSelect').value;
-  if (!key || !EXERCISES[key]) { alert(t('chooseFirst')); return; }
-  currentExo = EXERCISES[key];
-  const tips = currentExo.tips[lang].map(ti => `<li>${ti}</li>`).join('');
-  document.getElementById('exoDescription').innerHTML = `
-    <h3 style="margin-bottom:0.5rem;font-size:0.95rem;">${currentExo.title[lang]}</h3>
+/* ========== EXERCISES ========== */
+function startExercise(){
+  const key=document.getElementById('exoSelect').value;
+  if(!key||!EXERCISES[key]){ alert(t('chooseFirst')); return; }
+  currentExo=EXERCISES[key];
+  const tips=currentExo.tips[lang].map(ti=>`<li>${ti}</li>`).join('');
+  document.getElementById('exoDescription').innerHTML=`
+    <h3 style="margin-bottom:0.45rem;font-size:0.92rem;">${currentExo.title[lang]}</h3>
     <p class="help-text" style="white-space:pre-line;">${currentExo.description[lang]}</p>
-    <p style="margin-top:0.6rem;font-size:0.75rem;color:var(--muted);"><strong>${lang==='fr'?'Conseils':'Tips'}:</strong></p>
-    <ul style="margin:0.25rem 0 0 1rem;font-size:0.75rem;color:var(--muted);line-height:1.45;">${tips}</ul>
-  `;
-  document.getElementById('feedback').className = 'feedback';
-  document.getElementById('feedback').style.display = 'none';
+    <p style="margin-top:0.55rem;font-size:0.72rem;color:var(--muted);"><strong>${lang==='fr'?'Conseils':'Tips'}:</strong></p>
+    <ul style="margin:0.2rem 0 0 1rem;font-size:0.72rem;color:var(--muted);line-height:1.4;">${tips}</ul>`;
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('feedback').style.display='none';
   setStatus(currentExo.title[lang]);
   document.querySelector('.side-tabs button[data-tab="exo"]').click();
 }
 
-function correctSchema() {
-  if (!currentExo) { alert(t('loadFirst')); return; }
-  const results = [];
-  let score = 0, total = 0;
-  currentExo.required.forEach(req => {
+function correctSchema(){
+  if(!currentExo){ alert(t('loadFirst')); return; }
+  const results=[]; let score=0, total=0;
+  currentExo.required.forEach(req=>{
     total++;
-    let count = 0;
-    if (req.type === 'arrow') count = arrows.length;
-    else if (req.type === 'zone') count = zones.length;
-    else if (req.type === 'label') {
-      count = objects.filter(o => {
-        const def = ICONS.find(i => i.id === o.type);
-        return o.label && def && o.label !== def.label.fr && o.label !== def.label.en;
+    let count=0;
+    if(req.type==='arrow') count=arrows.length;
+    else if(req.type==='zone') count=zones.length;
+    else if(req.type==='label'){
+      count=objects.filter(o=>{
+        const def=ICONS.find(i=>i.id===o.type);
+        return o.label && def && o.label!==def.label.fr && o.label!==def.label.en;
       }).length + zones.length;
-    } else count = objects.filter(o => o.type === req.type).length;
-    const ok = count >= req.min;
-    if (ok) score++;
-    results.push({ ok, msg: req.msg[lang] });
+    } else count=objects.filter(o=>o.type===req.type).length;
+    const ok=count>=req.min;
+    if(ok) score++;
+    results.push({ok, msg:req.msg[lang]});
   });
-  const ratio = total ? score / total : 0;
-  const fb = document.getElementById('feedback');
-  let cls = 'ko', title = lang==='fr' ? 'À retravailler' : 'Needs work';
-  if (ratio >= 0.85) { cls = 'ok'; title = lang==='fr' ? 'Très bien !' : 'Great job!'; }
-  else if (ratio >= 0.5) { cls = 'partial'; title = lang==='fr' ? 'Presque…' : 'Almost…'; }
-  fb.className = 'feedback ' + cls;
-  fb.innerHTML = `<strong>${title}</strong> — ${Math.round(ratio*100)} %
-    <ul>${results.map(r => `<li style="color:${r.ok?'#6ee7b7':'#fca5a5'}">${r.ok?'✓':'✗'} ${r.msg}</li>`).join('')}</ul>
-    <p style="margin-top:0.5rem;font-size:0.78rem;">${cls==='ok'
-      ? (lang==='fr'?'Éléments présents. Vérifiez encore la clarté des labels et la légende.':'Elements present. Check label clarity and legend.')
-      : (lang==='fr'?'Complétez les éléments manquants et nommez les équipements.':'Complete missing elements and name the devices.')}</p>`;
+  const ratio=total?score/total:0;
+  const fb=document.getElementById('feedback');
+  let cls='ko', title=lang==='fr'?'À retravailler':'Needs work';
+  if(ratio>=0.85){ cls='ok'; title=lang==='fr'?'Très bien !':'Great job!'; }
+  else if(ratio>=0.5){ cls='partial'; title=lang==='fr'?'Presque…':'Almost…'; }
+  fb.className='feedback '+cls;
+  fb.innerHTML=`<strong>${title}</strong> — ${Math.round(ratio*100)} %
+    <ul>${results.map(r=>`<li style="color:${r.ok?'#6ee7b7':'#fca5a5'}">${r.ok?'✓':'✗'} ${r.msg}</li>`).join('')}</ul>
+    <p style="margin-top:0.45rem;font-size:0.75rem;">${cls==='ok'
+      ?(lang==='fr'?'Éléments présents. Vérifiez la clarté des labels et la légende.':'Elements present. Check label clarity and legend.')
+      :(lang==='fr'?'Complétez les éléments manquants et nommez les équipements.':'Complete missing elements and name the devices.')}</p>`;
   document.querySelector('.side-tabs button[data-tab="exo"]').click();
 }
 
-function clearCanvas() {
-  if (!confirm(t('clearConfirm'))) return;
-  objects = []; arrows = []; zones = []; selected = null;
+function clearCanvas(){
+  if(!confirm(t('clearConfirm'))) return;
+  objects=[]; arrows=[]; zones=[]; selected=null; arrowStart=null;
   draw(); updateCount(); updateLegend();
 }
 
-function addLegend() {
+function addLegend(){
   updateLegend();
   document.querySelector('.side-tabs button[data-tab="legend"]').click();
 }
 
-function updateLegend() {
-  const box = document.getElementById('legendContent');
-  const used = [...new Set(objects.map(o => o.type))];
-  const zlab = [...new Set(zones.map(z => z.label))];
-  let html = `<h4>${t('legendTitle')}</h4>`;
-  if (!used.length && !zlab.length) html += `<p class="help-text">${t('legendEmpty')}</p>`;
-  else {
-    used.forEach(tp => {
-      const def = ICONS.find(i => i.id === tp);
-      html += `<div class="legend-item"><span class="swatch" style="background:${getTypeColor(tp)}"></span> ${def ? def.label[lang] : tp}</div>`;
+function updateLegend(){
+  const box=document.getElementById('legendContent');
+  const used=[...new Set(objects.map(o=>o.type))];
+  const zlab=[...new Set(zones.map(z=>z.label))];
+  let html=`<h4>${t('legendTitle')}</h4>`;
+  if(!used.length&&!zlab.length) html+=`<p class="help-text">${t('legendEmpty')}</p>`;
+  else{
+    used.forEach(tp=>{
+      const def=ICONS.find(i=>i.id===tp);
+      html+=`<div class="legend-item"><span class="swatch" style="background:${getTypeColor(tp)}"></span> ${def?def.label[lang]:tp}</div>`;
     });
-    zlab.forEach(l => {
-      html += `<div class="legend-item"><span class="swatch" style="background:rgba(245,158,11,0.4);border-style:dashed;"></span> Zone : ${l}</div>`;
+    zlab.forEach(l=>{
+      html+=`<div class="legend-item"><span class="swatch" style="background:rgba(245,158,11,0.4);border-style:dashed;"></span> Zone : ${l}</div>`;
     });
   }
-  box.innerHTML = html;
+  box.innerHTML=html;
 }
 
-function getTypeColor(t) {
-  const m = {router:'#3b82f6',switch:'#06b6d4',firewall:'#ef4444',server:'#8b5cf6',workstation:'#94a3b8',cloud:'#64748b',ap:'#14b8a6',db:'#f59e0b',loadbalancer:'#ec4899',fileserver:'#a78bfa'};
-  return m[t] || '#64748b';
+function getTypeColor(t){
+  const m={router:'#3b82f6',switch:'#06b6d4',firewall:'#ef4444',server:'#8b5cf6',workstation:'#94a3b8',cloud:'#64748b',ap:'#14b8a6',db:'#f59e0b',loadbalancer:'#ec4899',fileserver:'#a78bfa'};
+  return m[t]||'#64748b';
 }
 
-function updateCount() {
-  document.getElementById('statusRight').textContent =
+function updateCount(){
+  document.getElementById('statusRight').textContent=
     `${lang==='fr'?'Objets':'Objects'}: ${objects.length} | ${lang==='fr'?'Liens':'Links'}: ${arrows.length} | Zones: ${zones.length}`;
 }
-function setStatus(msg) { document.getElementById('statusLeft').textContent = msg; }
+function setStatus(msg){ document.getElementById('statusLeft').textContent=msg; }
 
-function exportPNG() {
-  const link = document.createElement('a');
-  link.download = 'schema-reseau-' + Date.now() + '.png';
-  link.href = canvas.toDataURL('image/png');
+function exportPNG(){
+  // export at 2x for quality
+  const link=document.createElement('a');
+  link.download='schema-reseau-'+Date.now()+'.png';
+  link.href=canvas.toDataURL('image/png');
   link.click();
 }
 
